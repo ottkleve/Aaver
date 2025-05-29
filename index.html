@@ -4831,18 +4831,10 @@
 													</div>
 												</div>
 												<div class="elementor-element elementor-element-488f29c elementor-button-align-end elementor-mobile-button-align-center elementor-widget elementor-widget-form"
-													data-id="488f29c" data-element_type="widget"
-													data-settings="{&quot;step_next_label&quot;:&quot;\u0421\u043b\u0435\u0434\u0443\u044e\u0449\u0430\u044f&quot;,&quot;step_previous_label&quot;:&quot;\u041f\u0440\u0435\u0434\u044b\u0434\u0443\u0449\u0430\u044f&quot;,&quot;step_type&quot;:&quot;number_text&quot;,&quot;step_icon_shape&quot;:&quot;circle&quot;}"
 													data-widget_type="form.default">
 													<div class="elementor-widget-container">
 														<form class="elementor-form" method="post"
 															name="Fragen geht immer">
-															<input type="hidden" name="post_id" value="28">
-															<input type="hidden" name="form_id" value="488f29c">
-															<input type="hidden" name="referer_title" value="">
-
-															<input type="hidden" name="queried_id" value="28">
-
 															<div
 																class="elementor-form-fields-wrapper elementor-labels-above">
 																<div
@@ -5562,6 +5554,62 @@
 
 
 	<script src="./public/swiper.min.js"></script>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+		const form = document.querySelector('form.elementor-form');
+
+		form.addEventListener('submit', async (e) => {
+			e.preventDefault();
+
+			const formData = new FormData(form);
+			const bilder = [];
+			const files = formData.getAll('form_fields[files][]');
+
+			for (const file of files) {
+			const base64 = await toBase64(file);
+			bilder.push(base64);
+			}
+
+			const data = {
+			name: formData.get('form_fields[name]') || '',
+			email: formData.get('form_fields[email]') || '',
+			telefon: formData.get('form_fields[telefon]') || '',
+			service: formData.get('form_fields[service]') || '',
+			nachricht: formData.get('form_fields[nachricht]') || '',
+			bilder: bilder
+			};
+
+			fetch('https://script.google.com/macros/s/AKfycbwGyLs2qDl0qcqvBFrcRzpV4tcT0iuWkwgMvd9OhNJW/exec', {
+			method: 'POST',
+			body: JSON.stringify(data),
+			headers: {
+				'Content-Type': 'application/json'
+			}
+			}).then(res => res.json())
+			.then(response => {
+				if (response.status === 'success') {
+				alert('Anfrage erfolgreich gesendet!');
+				form.reset();
+				} else {
+				alert('Fehler: ' + response.message);
+				}
+			}).catch(err => {
+				alert('Fehler beim Senden der Anfrage');
+				console.error(err);
+			});
+		});
+
+		function toBase64(file) {
+			return new Promise((resolve, reject) => {
+			const reader = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => resolve(reader.result);
+			reader.onerror = error => reject(error);
+			});
+		}
+		});
+		</script>
+
 </body>
 
 </html>
