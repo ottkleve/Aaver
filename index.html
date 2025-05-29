@@ -5579,12 +5579,14 @@
 			bilder: bilder
 			};
 
-			fetch('https://script.google.com/macros/s/AKfycbwGyLs2qDl0qcqvBFrcRzpV4tcT0iuWkwgMvd9OhNJW/exec', {
+			fetch('https://script.google.com/macros/s/AKfycbzyJmI8mYAtAFV0-lcAeNywgz9LTgimgUOihtQQrxynuneFuyWJuyDGg3Xvax-B0ToTMA/exec', {
 			method: 'POST',
 			body: JSON.stringify(data),
+			mode: 'cors',
 			headers: {
 				'Content-Type': 'application/json'
 			}
+			
 			}).then(res => res.json())
 			.then(response => {
 				if (response.status === 'success') {
