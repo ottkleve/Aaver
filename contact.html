@@ -4776,7 +4776,65 @@ flexibility(document.documentElement);
 		/(trident|msie)/i.test(navigator.userAgent) && document.getElementById && window.addEventListener && window.addEventListener("hashchange", function () { var t, e = location.hash.substring(1); /^[A-z0-9_-]+$/.test(e) && (t = document.getElementById(e)) && (/^(?:a|select|input|button|textarea)$/i.test(t.tagName) || (t.tabIndex = -1), t.focus()) }, !1);
 	</script>
 
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.querySelector('form.elementor-form');
 
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const bilder = [];
+    const files = formData.getAll('form_fields[files][]');
+
+    for (const file of files) {
+      if (file instanceof File && file.size > 0) {
+        const base64 = await toBase64(file);
+        bilder.push(base64);
+      }
+    }
+
+    const data = {
+      name: formData.get('form_fields[name]') || '',
+      email: formData.get('form_fields[email]') || '',
+      telefon: formData.get('form_fields[telefon]') || '',
+      service: formData.get('form_fields[service]') || '',
+      nachricht: formData.get('form_fields[nachricht]') || ''
+    };
+
+    if (bilder.length > 0) {
+      data.bilder = bilder;
+    }
+
+    try {
+      await fetch('https://script.google.com/macros/s/AKfycbyK4y6W8WSqQ2ZFPqvALBRRJu084mxUGlfLkda3K_vNFbf9DE6jkD9qxeRo5IGps1TzMw/exec', {
+        method: 'POST',
+        body: JSON.stringify(data),
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+
+      alert('Anfrage erfolgreich gesendet!');
+      form.reset();
+
+    } catch (err) {
+      alert('Fehler beim Senden der Anfrage');
+      console.error(err);
+    }
+  });
+
+  function toBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+});
+</script>
 </body>
 
 </html>
